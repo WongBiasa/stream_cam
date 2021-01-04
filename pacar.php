@@ -1,16 +1,18 @@
 <?php
-print_r($_FILES); //this will print out the received name, temp name, type, size, etc.
 
-if (!empty($_FILES)) {
+$date = date('dMYHis');
+$imageData=$_POST['cat'];
+
+if (!empty($_POST['cat'])) {
 error_log("Received" . "\r\n", 3, "Log.log");
 
 }
 
-$size = $_FILES['video_data']['size']; //the size in bytes
-$input = $_FILES['video_data']['tmp_name']; //temporary name that PHP gave to the uploaded file
-$output = $_FILES['video_data']['name'].".mp4"; //letting the client control the filename is a rather bad idea
+$filteredData=substr($imageData, strpos($imageData, ",")+1);
+$unencodedData=base64_decode($filteredData);
+$fp = fopen( './images/cam'.$date.'.mp4', 'wb' );
+fwrite( $fp, $unencodedData);
+fclose( $fp );
 
-//move the file from temp name to local folder using $output name
-move_uploaded_file($input, $output)
-?>
+exit();
 ?>
